@@ -1,0 +1,16 @@
+{
+  "name": "sparki-video-editor",
+  "version": "1.1.0",
+  "description": "AI video editor for creators. Transform raw footage into polished vlogs, talking-head videos, or social media content (TikTok/Shorts/Reels) via natural-language prompts, style presets, or reference-style cloning. Runs on the cloud-hosted Sparki API through the sparki-cli.",
+  "author": "sparki-io",
+  "homepage": "https://sparki.io",
+  "license": "MIT-0",
+  "skills": "skills/",
+  "requirements": {
+    "bins": ["uv"],
+    "env": ["SPARKI_API_KEY"]
+  },
+  "install": {
+    "command": "uv tool install --upgrade sparki-cli"
+  }
+}
