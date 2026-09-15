@@ -5,7 +5,7 @@
   "author": "sparki-io",
   "homepage": "https://sparki.io",
   "license": "MIT-0",
-  "skills": "skills/",
+  "skills": "./skills/",
   "requirements": {
     "bins": ["uv"],
     "env": ["SPARKI_API_KEY"]
