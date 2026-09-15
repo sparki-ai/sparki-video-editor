@@ -27,7 +27,7 @@ sparki-video-editor/                       # marketplace repo
 ## Prerequisites
 
 - [`uv`](https://docs.astral.sh/uv/) on PATH (used to install the CLI)
-- A Sparki API key from https://sparki.io/claude-code-skill
+- A Sparki API key from https://sparki.io/codex-skill
 
 ## Install
 
@@ -72,7 +72,7 @@ environment glue was swapped:
 |---|---|
 | Output left at legacy default `~/.openclaw/workspace/sparki/videos/` | Skill always passes `--output ./sparki-output/...` into the working dir |
 | Config at `~/.openclaw/config/` (OpenClaw-managed) | Same path (hardcoded in CLI) — but does NOT require OpenClaw installed; just a legacy dir name |
-| API key from Telegram bot | API key from https://sparki.io/claude-code-skill (or `SPARKI_API_KEY` env) |
+| API key from Telegram bot | API key from https://sparki.io/codex-skill (or `SPARKI_API_KEY` env) |
 | `sparki upload-tg` / Mini App upload (Mode B) | removed — upload local file paths directly |
 | `--reference-tg` for style-clone | removed — use `--reference-url` / `--reference-file` |
 | `delivery_hint: telegram_direct/link_only` | local output path + optional `result_url` |
