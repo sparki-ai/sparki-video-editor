@@ -58,7 +58,7 @@ Poll with `sparki status --task-id <id>`. Processing usually takes 5–20 min.
 
 | Code | Meaning | Action |
 |---|---|---|
-| `AUTH_FAILED` | API key invalid | Get a new key at https://sparki.io/doc/api, `sparki setup --api-key <key>` |
+| `AUTH_FAILED` | API key invalid | Get a new key at https://sparki.io/claude-code-skill, `sparki setup --api-key <key>` |
 | `QUOTA_EXCEEDED` | Out of credits | Top up at https://sparki.io/ (Billing), retry |
 | `STORAGE_FULL` | Asset storage quota exceeded | `sparki assets delete ...` or web UI, then retry |
 | `FILE_TOO_LARGE` | File > 3GB | Compress/trim before uploading |
