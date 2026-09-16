@@ -19,7 +19,7 @@ sparki-video-editor/                       # marketplace repo
             └── sparki-video-editor/
                 ├── SKILL.md               # instructions + metadata (loaded on demand)
                 ├── scripts/
-                │   └── install.sh         # uv tool install --upgrade sparki-cli + doctor
+                │   └── install.sh         # install the CLI and verify its executable
                 └── references/
                     └── sparki-reference.md  # full styles / status / error tables
 ```
@@ -46,9 +46,9 @@ codex plugin add sparki-video-editor@sparki-marketplace
 # 3. Install the engine and verify:
 bash plugins/sparki-video-editor/skills/sparki-video-editor/scripts/install.sh
 
-# 4. Configure your key (or export SPARKI_API_KEY):
-sparki setup --api-key <YOUR_KEY>
-sparki doctor
+# 4. Configure your key (or export SPARKI_API_KEY and SPARKI_CHANNEL=codex):
+sparki setup --api-key <YOUR_KEY> --channel codex
+sparki doctor --channel codex
 ```
 
 ## Usage
@@ -60,7 +60,7 @@ mentions of vlog / clip / short / reel / caption / montage / TikTok, etc.
 > Edit ./raw/trip.mp4 into a vertical travel highlight reel
 ```
 
-Codex runs `sparki doctor` first, confirms editing preferences, then
+Codex runs `sparki doctor --channel codex` first, confirms editing preferences, then
 `sparki run ... --output ./sparki-output/<task_id>.mp4`.
 
 ## What changed vs. the OpenClaw/Telegram skill
@@ -72,7 +72,7 @@ environment glue was swapped:
 |---|---|
 | Output left at legacy default `~/.openclaw/workspace/sparki/videos/` | Skill always passes `--output ./sparki-output/...` into the working dir |
 | Config at `~/.openclaw/config/` (OpenClaw-managed) | Same path (hardcoded in CLI) — but does NOT require OpenClaw installed; just a legacy dir name |
-| API key from Telegram bot | API key from https://sparki.io/codex-skill (or `SPARKI_API_KEY` env) |
+| API key from Telegram bot | API key from https://sparki.io/codex-skill (or `SPARKI_API_KEY` with `SPARKI_CHANNEL=codex`) |
 | `sparki upload-tg` / Mini App upload (Mode B) | removed — upload local file paths directly |
 | `--reference-tg` for style-clone | removed — use `--reference-url` / `--reference-file` |
 | `delivery_hint: telegram_direct/link_only` | local output path + optional `result_url` |
