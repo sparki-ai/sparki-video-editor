@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Install / upgrade the sparki-cli engine that powers this skill.
 # The CLI is a thin HTTP client for the cloud-hosted Sparki API
-# (agent-api.sparki.io) — no local rendering, no host-environment coupling.
+# (agent-api.sparki.io) — no local rendering. Optional result reveal uses the
+# host operating system's native file manager.
 set -euo pipefail
 
 if ! command -v uv >/dev/null 2>&1; then
@@ -14,8 +15,13 @@ uv tool install --upgrade sparki-cli
 
 echo
 echo "Verifying the CLI executable..."
-sparki --help >/dev/null
+if command -v sparki >/dev/null 2>&1; then
+  sparki_command=(sparki)
+else
+  sparki_command=(uv tool run --from sparki-cli sparki)
+fi
+"${sparki_command[@]}" --help >/dev/null
 echo
 echo "sparki-cli installed. Configure an API key, then verify the connection:"
-echo "  sparki setup --api-key <YOUR_KEY> --channel codex"
-echo "  sparki doctor --channel codex"
+printf '  %s setup --api-key <YOUR_KEY> --channel codex\n' "${sparki_command[*]}"
+printf '  %s doctor --channel codex\n' "${sparki_command[*]}"
