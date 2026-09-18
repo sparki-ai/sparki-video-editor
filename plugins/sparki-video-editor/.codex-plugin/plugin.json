@@ -1,6 +1,6 @@
 {
   "name": "sparki-video-editor",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "AI video editor for creators. Transform raw footage into polished vlogs, talking-head videos, or social media content (TikTok/Shorts/Reels) via natural-language prompts, style presets, or reference-style cloning. Runs on the cloud-hosted Sparki API through the sparki-cli.",
   "author": {
     "name": "sparki-io",
@@ -15,7 +15,10 @@
     "longDescription": "Turn local footage into polished vlogs, highlight reels, and social clips through natural-language editing with cloud rendering.",
     "developerName": "Sparki",
     "category": "Creative",
-    "capabilities": ["Video editing", "Cloud rendering"],
+    "capabilities": [
+      "Video editing",
+      "Cloud rendering"
+    ],
     "websiteURL": "https://sparki.io",
     "defaultPrompt": [
       "Edit this video into a polished vertical highlight reel."
