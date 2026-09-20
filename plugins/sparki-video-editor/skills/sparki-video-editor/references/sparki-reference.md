@@ -44,7 +44,11 @@ Standard: `INIT → CHAT → PLAN → QUEUED → EXECUTOR → COMPLETED / FAILED
 
 Style-clone (shorter): `INIT → EXECUTOR → COMPLETED / FAILED / CANCEL`
 
-Poll with `sparki status --task-id <id>`. Processing usually takes 5–20 min.
+The local CLI can poll with `sparki status --task-id <id>`. The web runner
+polls automatically during `run`. If it returns a `task_id` and later times
+out or cannot download, create a new browser authorization and call `resume`
+with the returned `task_id`, `mode`, and `output`. Never repeat `run` for that
+project. Processing usually takes 5–20 min.
 
 ## Multi-Input Semantics
 
@@ -56,17 +60,19 @@ Poll with `sparki status --task-id <id>`. Processing usually takes 5–20 min.
 
 ## Full Error Code Table
 
-Codex configuration lives at `Path.home()/.sparki/config/config.json` on
+Local Codex configuration lives at `Path.home()/.sparki/config/config.json` on
 macOS, Linux, and Windows. Run `sparki config-status --channel codex` before
-starting login; when it reports `configured: false`, run `sparki login
---channel codex` and let the user approve in the browser. The key is saved
-without being displayed or pasted into chat.
+starting local login. Browser Codex uses the bundled web runner instead: it
+stores temporary PKCE state in the working directory, keeps the exchanged key
+in memory only, and removes the state after exchange.
 
 | Code | Meaning | Action |
 |---|---|---|
-| `AUTH_FAILED` | API key invalid | Run `sparki login --channel codex --force`, approve in the browser, then rerun doctor |
+| `AUTHORIZATION_PENDING` / `SLOW_DOWN` | Browser approval is not complete | Reuse the same URL and state; retry only after approval |
+| `AUTHORIZATION_EXPIRED` / `ACCESS_DENIED` | Browser request cannot continue | Create one new authorization |
+| `AUTH_FAILED` | API key invalid | Web runner: create a new authorization; local CLI: rerun login with `--force` |
 | `QUOTA_EXCEEDED` | Out of credits | Top up at https://sparki.io/ (Billing), retry |
-| `STORAGE_FULL` | Asset storage quota exceeded | `sparki assets delete ...` or web UI, then retry |
+| `STORAGE_FULL` | Asset storage quota exceeded | Browser: manage assets at sparki.io; local CLI: inspect/delete assets after confirmation |
 | `FILE_TOO_LARGE` | File > 3GB | Compress/trim before uploading |
 | `CONCURRENT_LIMIT` | Too many active projects | Run `sparki history`, wait/cancel |
 | `INVALID_FILE_FORMAT` | Not mp4/mov | Convert to mp4 or mov |
@@ -74,10 +80,10 @@ without being displayed or pasted into chat.
 | `INVALID_MODE` | Unknown mode | Suggest style-guided/prompt-driven/style-clone |
 | `INVALID_REFERENCE` | style-clone missing reference | Provide `--reference-url` or `--reference-file` |
 | `UPLOAD_FAILED` | Upload error | Retry; on partial, reuse `assets`, retry `failures` |
-| `RENDER_TIMEOUT` | Processing timed out | Shorter clip or higher `--timeout` |
+| `RENDER_TIMEOUT` | Processing timed out | Browser with `task_id`: authorize and `resume`; local CLI: inspect status/download before creating another project |
 | `TASK_NOT_FOUND` | Unknown task id | `sparki history` |
 | `NETWORK_ERROR` | Can't reach servers | Check connection |
-| `CONFIRMATION_REQUIRED` | Destructive op needs `--yes` | Confirm with user, re-run with `--yes` |
+| `CONFIRMATION_REQUIRED` | Required explicit approval is missing | Web runner: confirm potential charges and add `--confirm-charge`; destructive local CLI commands use `--yes` |
 | `NO_MATCH` | `--name` matched no asset | `--name` takes hashed `file_name` from `assets list`, not original name |
 | `DOCTOR_FAILED` | Self-check failed | Inspect `checks[]`, follow each `action` |
 
