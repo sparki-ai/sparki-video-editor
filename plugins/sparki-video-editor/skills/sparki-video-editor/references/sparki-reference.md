@@ -56,9 +56,15 @@ Poll with `sparki status --task-id <id>`. Processing usually takes 5–20 min.
 
 ## Full Error Code Table
 
+Codex configuration lives at `Path.home()/.sparki/config/config.json` on
+macOS, Linux, and Windows. Run `sparki config-status --channel codex` before
+starting login; when it reports `configured: false`, run `sparki login
+--channel codex` and let the user approve in the browser. The key is saved
+without being displayed or pasted into chat.
+
 | Code | Meaning | Action |
 |---|---|---|
-| `AUTH_FAILED` | API key invalid | Get a new key at https://sparki.io/codex-skill, `sparki setup --api-key <key> --channel codex` |
+| `AUTH_FAILED` | API key invalid | Run `sparki login --channel codex --force`, approve in the browser, then rerun doctor |
 | `QUOTA_EXCEEDED` | Out of credits | Top up at https://sparki.io/ (Billing), retry |
 | `STORAGE_FULL` | Asset storage quota exceeded | `sparki assets delete ...` or web UI, then retry |
 | `FILE_TOO_LARGE` | File > 3GB | Compress/trim before uploading |

@@ -27,7 +27,7 @@ sparki-video-editor/                       # marketplace repo
 ## Prerequisites
 
 - [`uv`](https://docs.astral.sh/uv/) on PATH (used to install the CLI)
-- A Sparki API key from https://sparki.io/codex-skill
+- A Sparki account; first-time setup opens https://sparki.io for approval
 
 If `uv` is missing, prefer an existing trusted package manager: `brew install
 uv` on macOS, `winget install --id=astral-sh.uv -e` on Windows, or `pipx
@@ -52,8 +52,9 @@ sparki --help
 # If sparki is not yet on PATH, verify it without restarting the shell:
 uv tool run --from sparki-cli sparki --help
 
-# 4. Configure your key (or export SPARKI_API_KEY and SPARKI_CHANNEL=codex):
-sparki setup --api-key <YOUR_KEY> --channel codex
+# 4. Connect your account (or export SPARKI_API_KEY and SPARKI_CHANNEL=codex):
+sparki config-status --channel codex
+sparki login --channel codex  # only when configured is false
 sparki doctor --channel codex
 ```
 
@@ -84,8 +85,8 @@ local delivery behavior differ:
 | OpenClaw/Telegram | Codex |
 |---|---|
 | Output left at legacy default `~/.openclaw/workspace/sparki/videos/` | Skill always passes `--output ./sparki-output/...` into the working dir |
-| Config at `~/.openclaw/config/` (OpenClaw-managed) | Same path (hardcoded in CLI) — but does NOT require OpenClaw installed; just a legacy dir name |
-| API key from Telegram bot | API key from https://sparki.io/codex-skill (or `SPARKI_API_KEY` with `SPARKI_CHANNEL=codex`) |
+| Config at `~/.openclaw/config/` (OpenClaw-managed) | Cross-platform `Path.home()/.sparki/config/config.json`; legacy config is read-only fallback |
+| API key from Telegram bot | Browser authorization with `sparki login --channel codex` (or `SPARKI_API_KEY` with `SPARKI_CHANNEL=codex`) |
 | `sparki upload-tg` / Mini App upload (Mode B) | removed — upload local file paths directly |
 | `--reference-tg` for style-clone | removed — use `--reference-url` / `--reference-file` |
 | `delivery_hint: telegram_direct/link_only` | absolute local output path + optional native file reveal; temporary URLs are not presented to the user |
