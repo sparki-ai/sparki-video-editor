@@ -2,7 +2,7 @@
 name: sparki-video-editor
 description: AI video editor for creators. Transform raw footage into polished vlogs, talking-head videos, or social media content (TikTok/Shorts/Reels). From cloning a reference style to natural language editing, simply describe your vision and let Sparki handle the rest. Runs on the cloud-hosted Sparki API — no local rendering, no ffmpeg.
 metadata:
-  version: "1.1.4"
+  version: "1.1.5"
 ---
 
 # Sparki Video Editor
@@ -14,18 +14,11 @@ metadata:
 - **All editing happens in the cloud.** `sparki-cli` is a thin HTTP client for `agent-api.sparki.io`, so nothing renders locally. Its optional `--reveal` delivery step uses the host operating system's native file manager.
 - **Video files live on the local filesystem** of the Codex working directory (or any path the user gives). You upload local paths directly — there is no chat-based file upload and no Mini App step.
 - **Output convention: ALWAYS pass `--output ./sparki-output/<output-name>.mp4`** so results land in the current working directory. The CLI's built-in default (when `--output` is omitted) is a legacy path — `~/.openclaw/workspace/sparki/videos/<task_id>.mp4` — so do not rely on the default; always redirect with `--output`.
-- **Config** (API key, base URL) is stored by the CLI at `~/.openclaw/config/sparki.json`. This directory name is legacy — it does NOT require OpenClaw to be installed; the CLI just uses that path. The path is hardcoded and cannot be changed via a flag. The API key can also be supplied via the `SPARKI_API_KEY` environment variable, which takes precedence over the config file; set `SPARKI_CHANNEL=codex` alongside it to preserve Codex-specific recovery guidance.
+- **Config** (API key, base URL) is stored by the CLI at `Path.home()/.sparki/config/config.json` on macOS, Linux, and Windows. The stored key is named `SPARKI_API_KEY`; the environment variable with the same name takes precedence. Set `SPARKI_CHANNEL=codex` alongside an environment key to preserve Codex-specific recovery guidance. The old OpenClaw config remains a read-only fallback.
 
 ## Step 0: Install the CLI and Run Doctor (ALWAYS FIRST)
 
-Start by checking whether `sparki` is already available:
-
-```bash
-sparki --help
-```
-
-If it succeeds, use `sparki` as the CLI command and continue to doctor. If it
-does not succeed, verify that `uv` is available:
+Verify that `uv` is available:
 
 ```bash
 uv --version
@@ -45,7 +38,7 @@ and ask them to complete the platform-specific installation locally. Do not
 silently download and execute a remote installation script. After installation,
 run `uv --version` again and stop with a clear error if it is still unavailable.
 
-Once `uv --version` succeeds, install the CLI:
+Once `uv --version` succeeds, install or upgrade the CLI:
 
 ```bash
 uv tool install --upgrade sparki-cli
@@ -59,16 +52,20 @@ works without restarting the shell:
 uv tool run --from sparki-cli sparki --help
 ```
 
-After a fresh install, use `uv tool run --from sparki-cli sparki` as the CLI
-command for the rest of the current task. When the initial `sparki --help`
-check succeeded, continue using the shorter `sparki` command. Every command
-below is written with `sparki` for readability; replace that leading word with
-`uv tool run --from sparki-cli sparki` when using the fresh-install fallback.
+Use `sparki` when it is on `PATH`; otherwise use `uv tool run --from sparki-cli
+sparki` for the rest of the current task. Every command below uses the shorter
+form for readability.
 
-Run `sparki doctor --channel codex` with the selected command form. It checks
-the CLI install, API key, base URL, and config directory. A missing API key is
-the expected first-run state and should continue directly to Step 1. For any
-other failed check, follow its `action` field.
+Check the canonical configuration file without reading or printing its key:
+
+```bash
+sparki config-status --channel codex
+```
+
+If it reports `configured: true`, do not ask for or replace the API key; run
+`sparki doctor --channel codex`. If it reports `configured: false`, continue
+to Step 1. A managed environment may use `SPARKI_API_KEY` without a file; in
+that case doctor can pass and browser login is not required.
 
 Before running an edit, choose the delivery mode once:
 
@@ -90,32 +87,37 @@ All executable examples below are single-line, platform-neutral base commands
 without `--reveal`. Apply the local-desktop rule above when constructing the
 actual command.
 
-If doctor reports `api_key` is missing, go to **Step 1: First-Time Setup**.
 If `api_key` is valid but `base_url` doesn't match the skill manifest, re-run
 `sparki setup --base-url <correct-url>`.
 
-## Step 1: First-Time Setup (only if doctor said api_key is missing)
+## Step 1: First-Time Browser Login (only if config is missing)
 
-Tell the user:
+Never ask the user to paste an API key into chat or expose it in command-line
+arguments. Start one browser authorization:
 
-> "You need a Sparki API key to use video editing. Get one from the Sparki
-> Codex skill page at https://sparki.io/codex-skill (click the **Get API Key**
-> button), then configure it locally without pasting it into chat.
->
-> Or set `SPARKI_API_KEY` and `SPARKI_CHANNEL=codex` in your environment and
-> I'll pick them up automatically."
+```bash
+sparki login --channel codex
+sparki doctor --channel codex
+```
 
-The CLI also reads `SPARKI_API_KEY` and `SPARKI_CHANNEL` from the environment —
-if the user has exported both with the channel set to `codex`, `sparki setup` is
-not required.
+The CLI opens `sparki.io`, where the user can sign in with the existing email
+code, Google, or Apple flow. After login, Sparki shows a confirmation prompt;
+the user explicitly approves Codex there. The CLI then receives the account
+API key directly and saves it to the cross-platform user-home path
+`~/.sparki/config/config.json` under `SPARKI_API_KEY`; the key is never printed.
+If the current environment is known to be headless, start with `sparki login
+--channel codex --no-browser`. If an ordinary login cannot open the browser,
+the running command prints the complete one-time URL; show that same URL and let
+the same command keep polling. Never ask the user to enter, copy, or paste an
+authorization code. Do not create a second authorization request merely because
+browser opening failed.
 
-After running `sparki setup --api-key <KEY> --channel codex`, run
-`sparki doctor --channel codex` again to
-confirm. Once doctor passes, tell the user:
+The `SPARKI_API_KEY` environment variable still takes precedence for managed
+environments. Set `SPARKI_CHANNEL=codex` alongside it for channel-specific
+recovery guidance. Once doctor passes, tell the user:
 
-If a missing or invalid key response does not identify a channel, direct Codex
-users to `https://sparki.io/codex-skill` and use `--channel codex` on the next
-setup or doctor command.
+If doctor reports an invalid key, run `sparki login --channel codex --force`
+and approve again in the browser.
 
 > "Sparki is ready! 🎬
 >
@@ -269,7 +271,7 @@ sparki run video.mp4 --mode style-clone --reference-file reference.mp4 --aspect-
 | `--duration-range` | No | Target duration: `<30s`, `30s~60s`, `60s~90s`, `>90s`, `custom` |
 | `--reference-url` | If style-clone | Reference video URL (TikTok, Instagram, X, Facebook) |
 | `--reference-file` | If style-clone | Local reference video file path |
-| `--output` | No | Output file path. **Always set this to `./sparki-output/<output-name>.mp4`** in Codex. If omitted, the CLI defaults to the legacy path `~/.openclaw/workspace/sparki/videos/<task_id>.mp4`. |
+| `--output` | No | Output file path. **Always set this to `./sparki-output/<output-name>.mp4`** in Codex. If omitted, the CLI uses its legacy output default. |
 | `--poll-interval` | No | Seconds between status checks (default: 30) |
 | `--timeout` | No | Max wait seconds (default: 3600) |
 | `--max-retries` | No | Per-file upload retries (default: 3; 0 disables) |
@@ -514,7 +516,7 @@ All commands return structured JSON. On error:
 
 | Error Code | What to tell the user |
 |---|---|
-| `AUTH_FAILED` | "Your API key is invalid. Get a new one at https://sparki.io/codex-skill, then run `sparki setup --api-key <key> --channel codex`." |
+| `AUTH_FAILED` | "Your API key is invalid. Run `sparki login --channel codex --force`, approve in the browser, then rerun doctor." |
 | `QUOTA_EXCEEDED` | "You've run out of Sparki credits. Top up at https://sparki.io/ (Billing → upgrade or buy credits), then retry." |
 | `STORAGE_FULL` | "Your Sparki asset storage is full. Two ways to fix it: (1) run `sparki assets list` and delete selected assets; only offer `sparki assets delete --all --yes` after receiving explicit confirmation for a full wipe, and execute it separately; (2) go to https://sparki.io and manage your uploaded assets from the web UI. After freeing space, retry the upload." |
 | `FILE_TOO_LARGE` | "File exceeds 3GB limit. Please compress or trim the video before uploading." |

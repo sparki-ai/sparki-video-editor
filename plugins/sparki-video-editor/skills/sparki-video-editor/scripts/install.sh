@@ -22,6 +22,7 @@ else
 fi
 "${sparki_command[@]}" --help >/dev/null
 echo
-echo "sparki-cli installed. Configure an API key, then verify the connection:"
-printf '  %s setup --api-key <YOUR_KEY> --channel codex\n' "${sparki_command[*]}"
+echo "sparki-cli installed. Check configuration before starting browser login:"
+printf '  %s config-status --channel codex\n' "${sparki_command[*]}"
+printf '  %s login --channel codex       # only when configured is false\n' "${sparki_command[*]}"
 printf '  %s doctor --channel codex\n' "${sparki_command[*]}"
