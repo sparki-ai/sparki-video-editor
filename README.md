@@ -55,10 +55,8 @@ sparki --help
 # If sparki is not yet on PATH, verify it without restarting the shell:
 uv tool run --from sparki-cli sparki --help
 
-# 4. Connect your account (or export SPARKI_API_KEY and SPARKI_CHANNEL=codex):
-sparki config-status --channel codex
-sparki login --channel codex  # only when configured is false
-sparki doctor --channel codex
+# 4. Connect and verify your account (or export SPARKI_API_KEY and SPARKI_CHANNEL=codex):
+sparki connect --channel codex --timeout 540
 ```
 
 Browser Codex stops after step 2. The installed skill automatically selects
@@ -80,8 +78,8 @@ mentions of vlog / clip / short / reel / caption / montage / TikTok, etc.
 > Edit ./raw/trip.mp4 into a vertical travel highlight reel
 ```
 
-On a local machine, Codex runs `sparki doctor --channel codex` first, confirms
-editing preferences, then runs `sparki run ... --output
+On a local machine, Codex runs `sparki connect --channel codex --timeout 540`
+first, confirms editing preferences, then runs `sparki run ... --output
 ./sparki-output/<output-name>.mp4`. In a local desktop environment it adds
 `--reveal`.
 
@@ -121,7 +119,7 @@ local delivery behavior differ:
 |---|---|
 | Output left at legacy default `~/.openclaw/workspace/sparki/videos/` | Skill always passes `--output ./sparki-output/...` into the working dir |
 | Config at `~/.openclaw/config/` (OpenClaw-managed) | Cross-platform `Path.home()/.sparki/config/config.json`; legacy config is read-only fallback |
-| API key from Telegram bot | Browser authorization with `sparki login --channel codex` (or `SPARKI_API_KEY` with `SPARKI_CHANNEL=codex`) |
+| API key from Telegram bot | Browser authorization with `sparki connect --channel codex --timeout 540` (or `SPARKI_API_KEY` with `SPARKI_CHANNEL=codex`) |
 | `sparki upload-tg` / Mini App upload (Mode B) | removed — upload local file paths directly |
 | `--reference-tg` for style-clone | removed — use `--reference-url` / `--reference-file` |
 | `delivery_hint: telegram_direct/link_only` | absolute local output path + optional native file reveal; temporary URLs are not presented to the user |
