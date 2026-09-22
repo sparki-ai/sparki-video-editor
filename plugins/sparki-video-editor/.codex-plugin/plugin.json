@@ -1,6 +1,6 @@
 {
   "name": "sparki-video-editor",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "AI video editor for creators. Transform raw footage into polished vlogs, talking-head videos, or social media content (TikTok/Shorts/Reels) via natural-language prompts, style presets, or reference-style cloning. Uses a bundled web runner or sparki-cli with the cloud-hosted Sparki API.",
   "author": {
     "name": "sparki-io",

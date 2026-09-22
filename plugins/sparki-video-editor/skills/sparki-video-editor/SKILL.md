@@ -2,7 +2,7 @@
 name: sparki-video-editor
 description: AI video editor for creators. Transform raw footage into polished vlogs, talking-head videos, or social media content (TikTok/Shorts/Reels). From cloning a reference style to natural language editing, simply describe your vision and let Sparki handle the rest. Runs on the cloud-hosted Sparki API — no local rendering, no ffmpeg.
 metadata:
-  version: "1.1.6"
+  version: "1.1.7"
 ---
 
 # Sparki Video Editor
@@ -114,27 +114,26 @@ replace it with `uv tool run --from sparki-cli sparki`.
 ### Connect once
 
 ```bash
-sparki config-status --channel codex
+sparki connect --channel codex --timeout 540
 ```
 
-When `configured` is false, run `sparki login --channel codex`. The CLI opens
-`sparki.io`; the user can sign in by email verification code, Google, or Apple
-and approve access. For headless environments use `--no-browser` and show the
-one-time URL while the same command keeps polling. Never request or expose the
-API key.
+Do not deliberately detach or background this command. Use the longest wait
+supported by the host. If the host returns a running task or session before the
+command exits, keep polling that same task or session until it finishes. The
+command reuses an existing credential; otherwise it opens `sparki.io` so the
+user can sign in by email verification code, Google, or Apple and approve
+access. It saves the key and runs doctor before returning. For headless
+environments add `--no-browser` and show the one-time URL while the same command
+keeps polling. Never request or expose the API key, ask the user to reply when
+approval is complete, or start a second connection.
 
 Configuration is shared cross-platform at
 `Path.home()/.sparki/config/config.json`. `SPARKI_API_KEY` and
 `SPARKI_CHANNEL=codex` may override it in managed environments.
 
-Then verify:
-
-```bash
-sparki doctor --channel codex
-```
-
-If the stored credential is invalid, use `sparki login --channel codex
---force`, then run doctor again.
+Report connection success only when the final JSON has `ok: true`. Follow a
+failed result's `action`; a rejected credential is replaced with `sparki
+connect --channel codex --force --timeout 540`.
 
 ### Run and deliver
 

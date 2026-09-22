@@ -61,16 +61,17 @@ project. Processing usually takes 5–20 min.
 ## Full Error Code Table
 
 Local Codex configuration lives at `Path.home()/.sparki/config/config.json` on
-macOS, Linux, and Windows. Run `sparki config-status --channel codex` before
-starting local login. Browser Codex uses the bundled web runner instead: it
-stores temporary PKCE state in the working directory, keeps the exchanged key
-in memory only, and removes the state after exchange.
+macOS, Linux, and Windows. Run `sparki connect --channel codex --timeout 540`
+to reuse or create local authorization and run doctor. Browser Codex uses the
+bundled web runner instead: it stores temporary PKCE state in the working
+directory, keeps the exchanged key in memory only, and removes the state after
+exchange.
 
 | Code | Meaning | Action |
 |---|---|---|
 | `AUTHORIZATION_PENDING` / `SLOW_DOWN` | Browser approval is not complete | Reuse the same URL and state; retry only after approval |
 | `AUTHORIZATION_EXPIRED` / `ACCESS_DENIED` | Browser request cannot continue | Create one new authorization |
-| `AUTH_FAILED` | API key invalid | Web runner: create a new authorization; local CLI: rerun login with `--force` |
+| `AUTH_FAILED` | API key invalid | Web runner: create a new authorization; local CLI: run `sparki connect --channel codex --force --timeout 540` |
 | `QUOTA_EXCEEDED` | Out of credits | Top up at https://sparki.io/ (Billing), retry |
 | `STORAGE_FULL` | Asset storage quota exceeded | Browser: manage assets at sparki.io; local CLI: inspect/delete assets after confirmation |
 | `FILE_TOO_LARGE` | File > 3GB | Compress/trim before uploading |
